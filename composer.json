@@ -1,0 +1,13 @@
+{
+    "require": {
+        "phpmailer/phpmailer": "^7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "RyTM\\": "src/"
+        },
+        "files": [
+            "src/Helpers/functions.php"
+        ]
+    }
+}
