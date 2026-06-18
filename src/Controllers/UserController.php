@@ -3,5 +3,5 @@ namespace RyTM\Controllers;
 
 class UserController
 {
-    // Будет реализован позже (профиль, редактирование)
+    // Будет реализован позже
 }

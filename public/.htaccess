@@ -2,3 +2,29 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
+
+# Лимит на размер POST-запроса (8 МБ)
+LimitRequestBody 8388608
+
+# Сжатие gzip для статики
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml text/javascript application/javascript application/x-javascript application/json
+</IfModule>
+
+# Кеширование статики
+<FilesMatch "\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$">
+    Header set Cache-Control "max-age=86400, public"
+</FilesMatch>
+
+# Настройка OPcache (если модуль включен)
+<IfModule mod_headers.c>
+    Header set X-OPcache "enabled"
+</IfModule>
+
+# Maintenance mode (раскомментировать для включения)
+# RewriteCond %{REQUEST_URI} !/maintenance\.html$ [NC]
+# RewriteRule ^(.*)$ /maintenance.html [L]
+
+# Принудительный HTTPS (раскомментировать в production)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]

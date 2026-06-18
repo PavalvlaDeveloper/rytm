@@ -1,55 +1,51 @@
 <?php
-use function RyTM\Helpers\csrf_token;
-use function RyTM\Helpers\hasMessage;
-use function RyTM\Helpers\getMessage;
-use function RyTM\Helpers\old;
-use function RyTM\Helpers\hasValidationError;
-use function RyTM\Helpers\validationErrorMessage;
+use RyTM\Helpers\Functions as F;
 
-$title = 'Регистрация – шаг 1';
+$title = 'Регистрация – шаг 1 / РИТМ';
 ob_start();
 ?>
 <div class="auth-container">
     <div class="auth-card">
         <h1>РЕГИСТРАЦИЯ</h1>
-        <?php if (hasMessage('error')): ?>
-            <div class="error-msg"><?= htmlspecialchars(getMessage('error')) ?></div>
+        <?php if (F::hasMessage('error')): ?>
+            <div class="error-msg"><?= F::escape(F::getMessage('error')) ?></div>
         <?php endif; ?>
-        <form action="/register/step1" method="post" id="register-form">
-            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+        <form action="/register/step1" method="post" id="register-form" novalidate>
+            <input type="hidden" name="csrf_token" value="<?= F::csrf_token() ?>">
             
-            <div class="input-group <?= hasValidationError('username') ? 'error' : '' ?>">
-                <input type="text" name="username" placeholder="Введите логин" value="<?= old('username') ?>" required>
-                <?php if (hasValidationError('username')): ?>
-                    <span class="error-text"><?= validationErrorMessage('username') ?></span>
+            <div class="input-group <?= F::hasValidationError('username') ? 'error' : '' ?>">
+                <input type="text" name="username" placeholder="Введите логин" value="<?= F::escape(F::old('username')) ?>" required>
+                <?php if (F::hasValidationError('username')): ?>
+                    <span class="error-text"><?= F::escape(F::validationErrorMessage('username')) ?></span>
                 <?php endif; ?>
             </div>
 
-            <div class="input-group <?= hasValidationError('email') ? 'error' : '' ?>">
-                <input type="email" name="email" placeholder="Введите почту" value="<?= old('email') ?>" required>
-                <?php if (hasValidationError('email')): ?>
-                    <span class="error-text"><?= validationErrorMessage('email') ?></span>
+            <div class="input-group <?= F::hasValidationError('email') ? 'error' : '' ?>">
+                <input type="email" name="email" placeholder="Введите почту" value="<?= F::escape(F::old('email')) ?>" required>
+                <?php if (F::hasValidationError('email')): ?>
+                    <span class="error-text"><?= F::escape(F::validationErrorMessage('email')) ?></span>
                 <?php endif; ?>
             </div>
 
-            <div class="input-group <?= hasValidationError('password') ? 'error' : '' ?>">
+            <div class="input-group <?= F::hasValidationError('password') ? 'error' : '' ?>">
                 <input type="password" name="password" id="password" placeholder="Введите пароль" required>
-                <button type="button" class="toggle-password" data-target="password">👁</button>
-                <?php if (hasValidationError('password')): ?>
-                    <span class="error-text"><?= validationErrorMessage('password') ?></span>
+                <button type="button" class="toggle-password" data-target="password" data-show="false">👁</button>
+                <?php if (F::hasValidationError('password')): ?>
+                    <span class="error-text"><?= F::escape(F::validationErrorMessage('password')) ?></span>
                 <?php endif; ?>
             </div>
 
-            <div class="input-group <?= hasValidationError('password_confirmation') ? 'error' : '' ?>">
+            <div class="input-group <?= F::hasValidationError('password_confirmation') ? 'error' : '' ?>">
                 <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Повторите пароль" required>
-                <button type="button" class="toggle-password" data-target="password_confirmation">👁</button>
-                <?php if (hasValidationError('password_confirmation')): ?>
-                    <span class="error-text"><?= validationErrorMessage('password_confirmation') ?></span>
+                <button type="button" class="toggle-password" data-target="password_confirmation" data-show="false">👁</button>
+                <?php if (F::hasValidationError('password_confirmation')): ?>
+                    <span class="error-text"><?= F::escape(F::validationErrorMessage('password_confirmation')) ?></span>
                 <?php endif; ?>
             </div>
 
             <div class="agreement">
-                <span class="hint">Регистрируясь, Вы автоматически соглашаетесь с <a href="/terms" target="_blank">правилами сайта</a></span>
+                <span><a href="/terms" target="_blank">Соглашение с правилами</a></span>
+                <span class="hint">Регистрируясь, Вы автоматически соглашаетесь с правилами сайта</span>
             </div>
 
             <button type="submit" class="btn-primary">Далее</button>

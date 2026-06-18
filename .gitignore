@@ -1,26 +1,16 @@
-# Composer зависимости (устанавливаются через composer install)
 /vendor/
-/composer.lock   # если хотите, чтобы composer.lock тоже игнорировался, обычно его коммитят, но для чистоты можно исключить
-
-# Переменные окружения (секреты) – НИКОГДА не коммитить!
+/composer.lock
 .env
 .env.local
 .env.*.local
-
-# Логи (системные ошибки, отладочная информация)
 /logs/
 *.log
-
-# Хранилище пользовательских файлов (биты, сниппеты, временные данные)
 /storage/beats/
 /storage/snippets/
 /storage/temp/
-
-# Публичные загрузки (временные файлы и аватарки пользователей – не храним в Git)
+/storage/avatars/
 /public/uploads/temp/
 /public/uploads/avatars/
-
-# Файлы IDE и системные мусорные файлы
 .idea/
 .vscode/
 .DS_Store
@@ -29,13 +19,9 @@ Thumbs.db
 *.swp
 *.swo
 *~
-
-# Кеши, сборка, временные файлы
 *.cache
 *.tmp
 .phpunit.result.cache
 .phpcs-cache
-
-# Конфиги с локальными настройками (если есть)
 /local.config.php
 /phpunit.xml

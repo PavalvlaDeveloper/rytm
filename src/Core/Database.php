@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace RyTM\Core;
 
 class Database
@@ -9,7 +11,13 @@ class Database
     {
         if (self::$connection === null) {
             require_once __DIR__ . '/../../config/db.php';
-            self::$connection = mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT);
+            self::$connection = mysqli_connect(
+                DB_HOST,
+                DB_USERNAME,
+                DB_PASSWORD,
+                DB_NAME,
+                (int)DB_PORT
+            );
             if (self::$connection === false) {
                 die('Ошибка подключения к БД: ' . mysqli_connect_error());
             }

@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace RyTM\Helpers;
 
 class Validator
 {
-    public static function validateRegistration($username, $email, $password, $passwordConfirm)
+    public static function validateRegistration(string $username, string $email, string $password, string $passwordConfirm): array
     {
         $errors = [];
 
@@ -19,6 +21,8 @@ class Validator
             $errors['email'] = 'Введите email';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Некорректный email';
+        } elseif (!Functions::validateEmailDomain($email)) {
+            $errors['email'] = 'Домен почты не существует или не принимает письма';
         }
 
         if (empty($password)) {

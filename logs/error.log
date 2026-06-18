@@ -1,0 +1,17 @@
+[2026-06-19 01:32:36] Exception: str_pad(): Argument #1 ($string) must be of type string, int given in D:\OSPanel\home\rytm.local\rytm\src\Services\AuthService.php on line 34
+Stack trace:
+#0 D:\OSPanel\home\rytm.local\rytm\src\Services\AuthService.php(34): str_pad(445357, 6, '0', 0)
+#1 D:\OSPanel\home\rytm.local\rytm\src\Controllers\AuthController.php(61): RyTM\Services\AuthService->initiateRegistration('Pavalvla', 'main.pavalvla@gmail.com', 'GOgp15348!')
+#2 D:\OSPanel\home\rytm.local\rytm\src\Core\Router.php(26): RyTM\Controllers\AuthController->processRegisterStep1()
+#3 D:\OSPanel\home\rytm.local\rytm\src\Core\App.php(27): RyTM\Core\Router->dispatch('POST', '/register/step1')
+#4 D:\OSPanel\home\rytm.local\rytm\public\index.php(39): RyTM\Core\App::run()
+#5 {main}
+[2026-06-19 01:32:36] Error: Uncaught TypeError: str_pad(): Argument #1 ($string) must be of type string, int given in D:\OSPanel\home\rytm.local\rytm\src\Services\AuthService.php:34
+Stack trace:
+#0 D:\OSPanel\home\rytm.local\rytm\src\Services\AuthService.php(34): str_pad(445357, 6, '0', 0)
+#1 D:\OSPanel\home\rytm.local\rytm\src\Controllers\AuthController.php(61): RyTM\Services\AuthService->initiateRegistration('Pavalvla', 'main.pavalvla@gmail.com', 'GOgp15348!')
+#2 D:\OSPanel\home\rytm.local\rytm\src\Core\Router.php(26): RyTM\Controllers\AuthController->processRegisterStep1()
+#3 D:\OSPanel\home\rytm.local\rytm\src\Core\App.php(27): RyTM\Core\Router->dispatch('POST', '/register/step1')
+#4 D:\OSPanel\home\rytm.local\rytm\public\index.php(39): RyTM\Core\App::run()
+#5 {main}
+  thrown in D:\OSPanel\home\rytm.local\rytm\src\Services\AuthService.php on line 34

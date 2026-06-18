@@ -1,14 +1,16 @@
 <?php
-$title = 'RYTM – Главная';
+use RyTM\Helpers\Functions as F;
+
+$title = 'Главная / РИТМ';
 ob_start();
 ?>
 <div class="home-container">
     <h1>Добро пожаловать в RYTM!</h1>
     <p>Магазин битов и сниппетов.</p>
     <?php if (isset($_SESSION['user'])): ?>
-        <p>Вы вошли как <strong><?= htmlspecialchars($_SESSION['user']['username']) ?></strong></p>
+        <p>Вы вошли как <strong><?= F::escape($_SESSION['user']['username']) ?></strong></p>
         <?php if ($_SESSION['user']['avatar']): ?>
-            <img src="<?= htmlspecialchars($_SESSION['user']['avatar']) ?>" alt="Avatar" style="width:50px;height:50px;border-radius:50%;">
+            <img src="<?= F::escape($_SESSION['user']['avatar']) ?>" alt="Avatar" style="width:50px;height:50px;border-radius:50%;">
         <?php endif; ?>
         <a href="/logout" class="btn-primary">Выйти</a>
     <?php else: ?>

@@ -1,2 +1,6 @@
 RewriteEngine On
 RewriteRule ^(.*)$ public/$1 [L]
+
+# Принудительный HTTPS (раскомментировать в production)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]

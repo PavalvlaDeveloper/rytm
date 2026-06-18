@@ -1,16 +1,30 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle password visibility
+    // ===== Toggle password (показ только при зажатой кнопке) =====
     document.querySelectorAll('.toggle-password').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
-            const input = document.getElementById(targetId);
+        const input = document.getElementById(btn.getAttribute('data-target'));
+
+        const showPassword = () => {
             if (input) {
-                input.type = (input.type === 'password') ? 'text' : 'password';
+                input.type = 'text';
+                btn.setAttribute('data-show', 'true');
             }
-        });
+        };
+        const hidePassword = () => {
+            if (input) {
+                input.type = 'password';
+                btn.setAttribute('data-show', 'false');
+            }
+        };
+
+        btn.addEventListener('mousedown', showPassword);
+        btn.addEventListener('mouseup', hidePassword);
+        btn.addEventListener('mouseleave', hidePassword);
+        btn.addEventListener('touchstart', showPassword);
+        btn.addEventListener('touchend', hidePassword);
+        btn.addEventListener('touchcancel', hidePassword);
     });
 
-    // Автоматический переход между полями кода (6 цифр)
+    // ===== Автоматический переход между полями кода (6 цифр) =====
     const codeInputs = document.querySelectorAll('.code-digit');
     if (codeInputs.length) {
         codeInputs.forEach((input, idx) => {
@@ -19,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     codeInputs[idx + 1].focus();
                 }
                 if (idx === 5 && this.value.length === 1) {
-                    this.form.submit();
+                    document.getElementById('confirm-form').dispatchEvent(new Event('submit'));
                 }
             });
             input.addEventListener('keydown', function(e) {
@@ -35,16 +49,100 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (codeInputs[i]) codeInputs[i].value = ch;
                     });
                     codeInputs[5].focus();
+                    document.getElementById('confirm-form').dispatchEvent(new Event('submit'));
                 }
             });
         });
     }
 
-    // Повторная отправка кода (AJAX)
+    // ===== Отправка формы подтверждения через AJAX =====
+    const confirmForm = document.getElementById('confirm-form');
+    if (confirmForm) {
+        confirmForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let code = '';
+            const inputs = this.querySelectorAll('.code-digit');
+            inputs.forEach(input => {
+                code += input.value;
+            });
+
+            if (code.length < 6) {
+                alert('Пожалуйста, введите все 6 цифр кода');
+                return;
+            }
+
+            fetch('/register/step2', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    code: code,
+                    csrf_token: this.querySelector('input[name="csrf_token"]').value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect || '/register/step3';
+                } else {
+                    alert(data.message || 'Неверный код подтверждения');
+                    inputs.forEach(input => input.value = '');
+                    inputs[0].focus();
+                }
+            })
+            .catch(err => {
+                alert('Ошибка соединения. Попробуйте позже.');
+            });
+        });
+    }
+
+    // ===== Повторная отправка кода с таймером 60 секунд =====
     const resendBtn = document.getElementById('resend-code');
-    const timerSpan = document.getElementById('resend-timer');
     if (resendBtn) {
+        let seconds = 60;
+        let interval = null;
+        let timeoutId = null;
+
+        const timerSpan = document.createElement('span');
+        timerSpan.id = 'resend-timer';
+
+        const setButtonTextWithTimer = () => {
+            timerSpan.textContent = seconds;
+            resendBtn.innerHTML = '';
+            resendBtn.appendChild(document.createTextNode('Выслать код повторно ('));
+            resendBtn.appendChild(timerSpan);
+            resendBtn.appendChild(document.createTextNode(' сек)'));
+        };
+
+        const startTimer = () => {
+            resendBtn.disabled = true;
+            seconds = 60;
+            setButtonTextWithTimer();
+
+            if (interval) clearInterval(interval);
+            interval = setInterval(() => {
+                seconds--;
+                timerSpan.textContent = seconds;
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    interval = null;
+                    resendBtn.disabled = false;
+                    timerSpan.textContent = '0';
+                }
+            }, 1000);
+        };
+
+        startTimer();
+
         resendBtn.addEventListener('click', function() {
+            if (this.disabled) return;
+
+            this.disabled = true;
+            this.innerHTML = 'Код повторно отправлен!';
+
             fetch('/register/resend', {
                 method: 'POST',
                 headers: {
@@ -58,25 +156,40 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Новый код отправлен на вашу почту');
-                    resendBtn.disabled = true;
-                    let seconds = 60;
-                    timerSpan.style.display = 'inline';
-                    timerSpan.textContent = seconds + 'с';
-                    const interval = setInterval(() => {
-                        seconds--;
-                        timerSpan.textContent = seconds + 'с';
-                        if (seconds <= 0) {
-                            clearInterval(interval);
-                            timerSpan.style.display = 'none';
-                            resendBtn.disabled = false;
-                        }
-                    }, 1000);
+                    timeoutId = setTimeout(() => {
+                        startTimer();
+                    }, 500);
                 } else {
                     alert('Ошибка: ' + data.error);
+                    startTimer();
                 }
             })
-            .catch(err => alert('Ошибка сети'));
+            .catch(err => {
+                alert('Ошибка сети');
+                startTimer();
+            });
+        });
+    }
+
+    // ===== Предпросмотр аватарки (шаг 3) =====
+    const avatarInput = document.getElementById('avatar-input');
+    const preview = document.getElementById('avatar-preview');
+    if (avatarInput && preview) {
+        preview.addEventListener('click', function() {
+            avatarInput.click();
+        });
+
+        avatarInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Avatar preview" style="max-width:100%; max-height:200px;">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = `<span class="placeholder">Загрузите изображение</span>`;
+            }
         });
     }
 });
